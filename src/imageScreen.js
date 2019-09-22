@@ -1,13 +1,20 @@
 import React, { Component } from 'react';
 import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
+import ImageZoom from 'react-native-image-pan-zoom';
 
 export default function imageScreen (props) {
   const {state} = props.navigation;
   const uri =state.params.uri;
     return (
-      <View style={styles.container}>
-        <Image source={{uri}} style={styles.images}/>  
-      </View>
+      <ImageZoom cropWidth={Dimensions.get('window').width}
+      cropHeight={Dimensions.get('window').height}
+      imageWidth={winWidth}
+      imageHeight={winHeight}>
+         <Image source={{uri}} style={styles.images}/>  
+    </ImageZoom>
+      // <View style={styles.container}>
+      //   <Image source={{uri}} style={styles.images}/>  
+      // </View>
       
     );
   }
