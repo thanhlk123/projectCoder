@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Button, Image } from 'react-native';
+import { View, Text, Button, Image, Dimensions } from 'react-native';
 import * as Permissions from 'expo-permissions'
 import { Camera } from 'expo-camera';
 import Toolbar from './toolbar.component';
@@ -8,6 +8,8 @@ import workScreen from './workScreen'
 import styles from './styles';
 import Popup from './popup';
 import ScanPreview from './scanPreview';
+import ImageZoom from 'react-native-image-pan-zoom';
+import GalleryImportPage from './galleryImport.page'
 
 import imageScreen from './imageScreen';
 import { createAppContainer } from 'react-navigation';
@@ -27,7 +29,9 @@ class CameraPage extends React.Component  {
         hasCameraPermission: null,
         toolbar:true,
         dataResponse:[],
-        uri:""
+        uri:"",
+        base64:"",
+        rotatedeg:0
       
     };
 
@@ -47,36 +51,55 @@ class CameraPage extends React.Component  {
       var min = new Date().getMinutes(); 
           sec = new Date().getSeconds(); 
         date = date + '/' + month + '/' + year + ' ' + hours + ':' + min + ':' + sec;
-        data={"uri":this.state.uri,"date":date}
-        console.log(this.state.captures.length)
-        if (this.state.captures.length==2){
-          this.props.navigation.navigate('work',{'uri':this.state.uri})
+        data={"uri":this.state.uri,"base":this.state.base64,"date":date}
+        if (this.state.captures.length>=2){
+          dataSubmit = [data, ...this.state.captures]
+          this.props.navigation.navigate('CommitScreen',{'dataSubmit':dataSubmit})
         }
         if (this.state.captures.length==1){
           this.setState ({
             captures: [data, ...this.state.captures],
             toolbar:true,
+            rotatedeg:0,
             cameraType: Camera.Constants.Type.front
           })}  
         else {
         
         this.setState ({
           captures: [data, ...this.state.captures],
-          toolbar:true
+          toolbar:true,
+          rotatedeg:0
         }) }
     }
     handleRemove = ()=>{
       this.setState ({
         uri:"",
-        toolbar:true
+        toolbar:true,
+        rotatedeg:0
+      })
+    }
+    onRoRight =() => {
+      rotatedeg = this.state.rotatedeg +90;
+      this.setState ({
+        rotatedeg: rotatedeg
+      })
+    }
+    
+    onRoLeft = () => {
+      rotatedeg = this.state.rotatedeg - 90;
+      this.setState ({
+        rotatedeg: rotatedeg
       })
     }
 
     handleShortCapture = async () => {
-        const photoData = await this.camera.takePictureAsync();
+        const photoData = await this.camera.takePictureAsync({
+          base64: true,
+        });
         this.setState({ 
           capturing: false, 
           uri: photoData.uri,
+          base64: photoData.base64,
           toolbar:false })
     };
 
@@ -107,7 +130,13 @@ class CameraPage extends React.Component  {
             <View style= {{flex:1,backgroundColor:'#255137'}}>
               <View style={{height:24,backgroundColor:'green'}}/>
               <View>
-                  <Image source={{uri: this.state.uri}} style={styles.preview}></Image>
+                <ImageZoom  cropWidth={winWidth}
+                            cropHeight={winHeight -100}
+                            imageWidth={winWidth}
+                            imageHeight={winHeight}>
+                    <Image  source={{uri: this.state.uri}} style={{width:winWidth,height:winHeight-100,transform:[{rotate:this.state.rotatedeg +"deg"}]}}/>  
+
+                </ImageZoom>
               </View>
               {captures.length > 0 && <Gallery captusres={captures} gotoImages={this.props.navigation.navigate} />}
               <Toolbar 
@@ -123,6 +152,8 @@ class CameraPage extends React.Component  {
                   styleToolbar={this.state.toolbar}
                   onOk={this.handleOK}
                   onRemove={this.handleRemove}
+                  onRoRight = {this.onRoRight}
+                  onRoLeft = {this.onRoLeft}
               />
               </View>
           </React.Fragment>)
@@ -175,6 +206,7 @@ class FElogo extends React.Component {
 }
 
 
+const { width: winWidth, height: winHeight } = Dimensions.get('window');
 
 const AppNavigator = createStackNavigator(
     {
@@ -186,8 +218,8 @@ const AppNavigator = createStackNavigator(
         }
       },
       images: imageScreen,
-      work:{
-        screen: workScreen,
+      CommitScreen:{
+        screen: GalleryImportPage,
         navigationOptions: {
           header:null,
           headerVisible: false,

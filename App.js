@@ -1,12 +1,24 @@
+// import React from 'react';
+
+// import CameraPage from './src/camera.page';
+
+// export default class App extends React.Component {
+//     render() {
+//         return (
+//             <CameraPage />
+//         );
+//     };
+// };
+
 import React from 'react';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
-import CameraPage from './src/camera.page';
-import {
-  StyleSheet, View, Platform, Text, FlatList, TouchableOpacity, Alert, ActivityIndicator, Image, TextInput, Animated, TouchableWithoutFeedback
-} from 'react-native';
-import { Ionicons, Entypo, AntDesign, SimpleLineIcons, Feather } from '@expo/vector-icons';
+import {View, TouchableOpacity, Alert, ActivityIndicator, Image, TextInput, Animated, Platform} from 'react-native';
+import { Ionicons, Entypo, AntDesign} from '@expo/vector-icons';
 
+import CameraPage from './src/camera.page';
+import GalleryImportScreen from './src/galleryImport.page';
+import ResultPage from './src/result.page';
 import TodoItem from './src/todoItem.component';
 import FloatingActionView from './src/floatingAction.component';
 import ViewDataSource from './src/VeiwDataSource.component';
@@ -27,8 +39,10 @@ class mainScreen extends React.Component {
       fadeValue1: new Animated.Value(0),
       fadeValue2: new Animated.Value(0),
       floatingAction: true,
+      navigation: this.props.navigation,
     }
   }
+
   showAction = () => {
     Animated.timing(this.state.fadeValue, {
       toValue: 1,
@@ -60,18 +74,37 @@ class mainScreen extends React.Component {
     }).start();
     this.setState({ floatingAction: true });
   }
-  componentDidMount() {
-    return fetch('https://reactnativecode.000webhostapp.com/FlowersList.php')
-      .then((response) => response.json())
-      .then((responseJson) => {
-        this.setState({
-          isLoading: false,
-          dataSource: responseJson
-        });
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+getApi() {
+  return fetch('https://reactnativecode.000webhostapp.com/FlowersList.php')
+  .then((response) => response.json())
+  .then((responseJson) => {
+    this.setState({
+      isLoading: false,
+      dataSource: responseJson
+    });
+  })
+  .catch((error) => {
+    console.error(error);
+  });
+}
+
+firebaseUrl() {
+  var firebaseConfig = {
+    apiKey: "AIzaSyCjXSBR_XRP_4pmFwikBkhnbBYggdRvBMw",
+    authDomain: "imagecccd.firebaseapp.com",
+    databaseURL: "https://imagecccd.firebaseio.com",
+    projectId: "imagecccd",
+    storageBucket: "imagecccd.appspot.com",
+    messagingSenderId: "218521949816",
+    appId: "1:218521949816:web:505df4bbc22c2b8698bf8d"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+}
+
+  componentDidMount = () => {
+    this.getApi();
+   // this.firebaseUrl();
   }
 
   ChangeGridValueFunction = () => {
@@ -89,12 +122,9 @@ class mainScreen extends React.Component {
     }
   }
 
-  GetGridViewItem(item) {
-    Alert.alert(item);
+  GetGridViewItem(item){
+    alert(item);
   }
-  navigateCam= () => {
-    this.props.navigation.navigate('CameraS');
-  };
 
   render() {
     return (
@@ -131,7 +161,6 @@ class mainScreen extends React.Component {
                     style={styles.todoInput}
                     onChangeText={text => this.setState({ todoBody: text })}
                   />
-
                 </View>
               </View>)}
 
@@ -146,6 +175,7 @@ class mainScreen extends React.Component {
               <ViewDataSource dataSource={this.state.dataSource}
                 GridColumnsValue={this.state.GridColumnsValue}
                 GetGridViewItem={this.GetGridViewItem}
+                navigation={this.state.navigation}
 
               />
             )}
@@ -155,7 +185,7 @@ class mainScreen extends React.Component {
             floatingAction={this.state.floatingAction}
             showAction={this.showAction}
             hideAction={this.hideAction}
-            navigateCam={this.navigateCam}
+            navigation={this.state.navigation}
           />
         </View>
       </View>
@@ -176,7 +206,8 @@ const AppNavigator = createStackNavigator(
   {
     CameraS: cameraScreen,
     main: mainScreen,
-
+    GalleryImportPage: GalleryImportScreen,
+    ResultPage: ResultPage,
   },
   {
     headerMode: 'none',

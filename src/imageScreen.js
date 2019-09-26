@@ -6,8 +6,8 @@ export default function imageScreen (props) {
   const {state} = props.navigation;
   const uri =state.params.uri;
     return (
-      <ImageZoom cropWidth={Dimensions.get('window').width}
-      cropHeight={Dimensions.get('window').height}
+      <ImageZoom cropWidth={winWidth}
+      cropHeight={winHeight}
       imageWidth={winWidth}
       imageHeight={winHeight}>
          <Image source={{uri}} style={styles.images}/>  
@@ -32,9 +32,8 @@ const styles=StyleSheet.create ({
     justifyContent: 'center',
   },
   images : {
-    flex:1,
     width:winWidth,
-    height:550,
+    height:winHeight-100,
   }
   
 })

@@ -13,7 +13,8 @@ export default function toolbar ({
     cameraType = CameraTypes.back, 
     flashMode = CameraFlashModes.off, 
     setFlashMode, setCameraType, 
-    onCaptureIn, onCaptureOut, onLongCapture, onShortCapture, styleToolbar, onOk, onRemove
+    onCaptureIn, onCaptureOut, onLongCapture, onShortCapture, styleToolbar, onOk, onRemove, onRoRight,
+    onRoLeft
 }) {
 
     if (styleToolbar) {
@@ -72,21 +73,17 @@ else {
             <TouchableOpacity onPress={() => setFlashMode( 
                 flashMode === CameraFlashModes.on ? CameraFlashModes.off : CameraFlashModes.on 
             )}>
-                <Image source={require('../image/share.png')} style={{width:30,height:30,justifyContent:'center',alignItems:'center'}}/>
-            </TouchableOpacity>
-        </Col>
-        <Col style={styles.alignCenter}>
-            <TouchableOpacity onPress={() => setFlashMode( 
-                flashMode === CameraFlashModes.on ? CameraFlashModes.off : CameraFlashModes.on 
-            )}>
                 <Image source={require('../image/crop.png')} style={{width:30,height:30,justifyContent:'center',alignItems:'center'}}/>
             </TouchableOpacity>
         </Col>
         <Col style={styles.alignCenter}>
-            <TouchableOpacity onPress={() => setFlashMode( 
-                flashMode === CameraFlashModes.on ? CameraFlashModes.off : CameraFlashModes.on 
-            )}>
+            <TouchableOpacity onPress={onRoLeft}>
                 <Image source={require('../image/rotate.png')} style={{width:30,height:30,justifyContent:'center',alignItems:'center'}}/>
+            </TouchableOpacity>
+        </Col>
+        <Col style={styles.alignCenter}>
+            <TouchableOpacity onPress={onRoRight}>
+                <Image source={require('../image/rotate_right.png')} style={{width:30,height:30,justifyContent:'center',alignItems:'center'}}/>
             </TouchableOpacity>
         </Col>
         <Col style={styles.alignCenter}>
