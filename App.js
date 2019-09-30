@@ -75,7 +75,10 @@ class mainScreen extends React.Component {
     this.setState({ floatingAction: true });
   }
 getApi() {
+
+ // return fetch('http://35.201.138.2:8001/get-json/')
   return fetch('https://reactnativecode.000webhostapp.com/FlowersList.php')
+  // .then((response) => {response.json(); console.log(response)})
   .then((response) => response.json())
   .then((responseJson) => {
     this.setState({
